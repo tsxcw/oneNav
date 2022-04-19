@@ -1,0 +1,33 @@
+{
+  "name": "jsb-util",
+  "version": "1.0.7",
+  "description": "一个常用的js工具类",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch",
+    "build": "webpack build",
+    "dev": "webpack serve --open && npm run watch"
+  },
+  "keywords": [
+    "util"
+  ],
+  "author": "tushan",
+  "license": "MIT",
+  "dependencies": {
+    "babel-plugin-transform-vue-jsx": "^3.7.0",
+    "css-loader": "^6.7.1",
+    "mini-css-extract-plugin": "^2.6.0",
+    "node-sass": "^7.0.1",
+    "sass": "^1.50.1",
+    "sass-loader": "^12.6.0",
+    "vue": "^3.2.33",
+    "xss": "^1.0.10"
+  },
+  "devDependencies": {
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.8.1",
+    "html-webpack-plugin": "^5.5.0"
+  }
+}
