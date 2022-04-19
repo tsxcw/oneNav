@@ -1,8 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const fs = require("fs");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const jsx = require("babel-plugin-transform-vue-jsx");
 let time = new Date().getTime()
 module.exports = {
     mode: 'development',
@@ -19,16 +17,17 @@ module.exports = {
             template: './index.html'
         }),
         new HtmlWebpackPlugin({
-            template: './login.html',
+            template: './src/view/login.html',
             filename: "login.html"
         }),
         new MiniCssExtractPlugin({
             filename: '[name].css'
         }),
+
     ],
     output: {
         filename: function ({runtime}) {
-            return runtime + time + '.js'
+            return runtime + '.js';
         },
         path: path.resolve(__dirname, 'dist'),
         clean: true,
@@ -44,7 +43,6 @@ module.exports = {
                         loader: MiniCssExtractPlugin.loader
                     },
                     {
-                        // Interprets CSS
                         loader: "css-loader",
                         options: {
                             importLoaders: 2
@@ -54,7 +52,7 @@ module.exports = {
                         loader: 'sass-loader' // 将 Sass 编译成 CSS
                     }
                 ]
-            }
+            },
         ]
     }
 };

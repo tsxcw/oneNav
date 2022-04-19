@@ -1,19 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="src/css/index.scss" rel="stylesheet" type="text/css"/>
     <meta charset="UTF-8">
     <title>oneNav</title>
     <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- 引入样式 -->
+    <link href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
 <div id="root">
-    <section class="main-page">
-        <div class="search">
-            <div class="search-type">百度</div>
-            <input :value="search" placeholder="搜一搜？">
+    <div class="main-page">
+        <div :class="{moveUp:drawer}" class="search">
+            <div class="inp">
+                <div class="search-type">百度</div>
+                <input :value="search" placeholder="搜一搜？">
+            </div>
+            <div class="sou">
+                <div class="sou-main">
+                    <transition v-for="(item,index) in sou" :key="index">
+                        <div>{{ item.name }}</div>
+                    </transition>
+                </div>
+            </div>
         </div>
-    </section>
+
+    </div>
+    <div :class="{show:drawer}" class="drawer">
+        <div class="dreaer-main">
+            <div>
+                <img src="https://img.tshy.xyz/5719">
+                <span>创次元</span>
+            </div>
+            <div>
+                <img src="https://img.tshy.xyz/i62494738dbad5">
+                <span>PNG</span>
+            </div>
+
+        </div>
+    </div>
 </div>
 </body>
 
