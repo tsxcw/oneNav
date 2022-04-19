@@ -49,8 +49,6 @@ window.addEventListener("touchstart", function (event) {
     }
 })
 window.addEventListener("touchend", function (event) {
-    event.preventDefault()
-    event.stopPropagation();
     let y = event.changedTouches[0].clientY;
     let t = new Date().getTime();
     if (y == vm.touch.y) {
@@ -67,3 +65,6 @@ window.addEventListener("touchend", function (event) {
         }
     }
 })
+document.addEventListener("touchmove", function (e) {
+    e.preventDefault()
+}, {passive: false})

@@ -1,6 +1,7 @@
 const sou = [
     {
-        name: '百度'
+        name: '百度',
+        href: "https://www.baidu.com/s?&ie=utf-8&word=$key"
     },
     {
         name: '搜狗'
@@ -16,8 +17,8 @@ const sou = [
     }
 ]
 
-function sousearch(text, sou) {
-    location.href = `${sou}?w=${text}`
+function sousearch(text) {
+    location.href = sou[0].href.replace(/\$key/, text)
 }
 
 exports.sousearch = sousearch;

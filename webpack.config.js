@@ -27,7 +27,7 @@ module.exports = {
     ],
     output: {
         filename: function ({runtime}) {
-            return runtime + '.js';
+            return runtime + time + '.js';
         },
         path: path.resolve(__dirname, 'dist'),
         clean: true,

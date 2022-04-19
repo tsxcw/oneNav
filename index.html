@@ -16,7 +16,7 @@
         <div :class="{moveUp:drawer}" class="search">
             <div class="inp">
                 <div class="search-type">百度</div>
-                <input :value="search" placeholder="搜一搜？">
+                <input v-model="search" placeholder="搜一搜？" @keyup.enter="search_go">
             </div>
             <div class="sou">
                 <div class="sou-main">
