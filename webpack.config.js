@@ -21,7 +21,7 @@ module.exports = {
             filename: "login.html"
         }),
         new MiniCssExtractPlugin({
-            filename: '[name].css'
+            filename: `[name]${time}.css`
         }),
 
     ],
@@ -29,13 +29,13 @@ module.exports = {
         filename: function ({runtime}) {
             return runtime + time + '.js';
         },
+        assetModuleFilename: '[hash][ext][query]',
         path: path.resolve(__dirname, 'dist'),
         clean: true,
         libraryExport: "default"
     },
     module: {
         rules: [
-            // Extracts the compiled CSS from the SASS files defined in the entry
             {
                 test: /\.scss$/,
                 use: [
@@ -45,14 +45,29 @@ module.exports = {
                     {
                         loader: "css-loader",
                         options: {
-                            importLoaders: 2
-                        }
+                            importLoaders: 2,
+                        },
                     },
                     {
-                        loader: 'sass-loader' // 将 Sass 编译成 CSS
+                        loader: 'sass-loader', // 将 Sass 编译成 CSS
                     }
                 ]
             },
+            {
+                test: /\.(jpg|png|gif|svg)$/,
+                loader: 'url-loader',
+                options: {
+                    name: '[hash:10].[ext]', // 图片重命名
+                    esModule: false
+                }
+            },
+            {
+                test: /\.jsx$/i,
+                loader: "babel-loader",
+                options: {
+                    presets: ['@babel/preset-react']
+                }
+            }
         ]
     }
 };

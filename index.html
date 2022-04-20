@@ -5,40 +5,35 @@
     <title>oneNav</title>
     <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <!-- 引入样式 -->
     <link href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
-    <!-- 引入组件库 -->
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
 <div id="root">
-    <div class="main-page">
+    <div class="main-page" @contextmenu="mouseMenu">
         <div :class="{moveUp:drawer}" class="search">
             <div class="inp">
-                <div class="search-type">百度</div>
+                <div class="search-type" @click="souStatus = !souStatus">
+                    <img :src="default_sou.icon"/>
+                </div>
                 <input v-model="search" placeholder="搜一搜？" @keyup.enter="search_go">
             </div>
-            <div class="sou">
+            <div :class="{souShow:souStatus}" class="sou">
                 <div class="sou-main">
-                    <transition v-for="(item,index) in sou" :key="index">
-                        <div>{{ item.name }}</div>
-                    </transition>
+                    <img v-for="(item,index) in sou" :key="index" :src="item.icon" @click="setsou(item)"/>
                 </div>
             </div>
         </div>
-
+        <men_add></men_add>
     </div>
-    <div :class="{show:drawer}" class="drawer">
-        <div class="dreaer-main">
-            <div>
-                <img src="https://img.tshy.xyz/5719">
-                <span>创次元</span>
+    <div :class="{show:drawer}" class="drawer" @mouseover.prevent>
+        <div class="drawer-main">
+            <div v-for="(item,index) in list" :key='index' @click="to(item)" class="dreaer-list">
+                <div class="img">
+                    <img :src="getIcon(item)" :alt="item.title">
+                </div>
+                <div class="name">{{ item.title }}</div>
             </div>
-            <div>
-                <img src="https://img.tshy.xyz/i62494738dbad5">
-                <span>PNG</span>
-            </div>
-
         </div>
     </div>
 </div>

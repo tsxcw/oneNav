@@ -16,6 +16,7 @@
       }
 
       > .search-type {
+        width: 60px !important;
         font-size: 14px !important;
       }
     }
@@ -71,14 +72,19 @@
 
 
       > .search-type {
-        flex: 2;
-        min-width: 70px;
-        max-width: 100px;
+        width: 80px;
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 16px;
         font-weight: 600;
+        cursor: pointer;
+
+        > img {
+          width: 26px;
+          height: 26px;
+        }
       }
 
       > input {
@@ -102,27 +108,38 @@
     > .sou {
       position: relative;
       margin-top: 10px;
-      margin-left: 5%;
+      margin-left: calc(2% - 8px);
       width: 300px;
-      display: none;
+
+      transform: scale(0);
+      transition: all 300ms;
 
       > .sou-main {
         display: flex;
         justify-content: space-around;
-        background-color: azure;
+        background-color: #ffffff;
         border-radius: 50px;
         height: 40px;
         transition: all 500ms;
+        align-items: center;
+
+        > img {
+          width: 25px;
+          height: 25px;
+          cursor: pointer;
+        }
+
 
         &::after {
           position: absolute;
           content: " ";
           width: 12px;
           height: 12px;
-          background-color: azure;
-          top: -6px;
+          background-color: #ffffff;
+          top: -5px;
           left: 30px;
           transform: rotate(45deg);
+          border-radius: 2px;
           z-index: -1;
         }
       }
@@ -141,28 +158,55 @@
   border-radius: 15px 15px 0 0;
   opacity: 0;
 
-  > .dreaer-main {
+  > .drawer-main {
     display: flex;
+    flex-wrap: wrap;
     padding: 30px 20px;
 
     > div {
-      width: 80px;
+      width: 25%;
       height: 100px;
       display: flex;
       flex-direction: column;
       align-items: center;
 
-      > img {
-        width: 50px;
-        height: 50px;
+      > .img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50px;
+        background-color: azure;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        > img {
+          object-fit: cover;
+          width: 25px;
+          height: 25px;
+        }
+      }
+
+      > .iconf {
+        font-size: 30px;
+        width: 60px;
+        height: 60px;
         border-radius: 5px;
         object-fit: cover;
         background-color: azure;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
       }
 
-      > span {
+      > .name {
+        width: 70px;
         margin-top: 5px;
-        font-size: 14px;
+        font-size: 12px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: center;
       }
     }
   }
@@ -171,6 +215,11 @@
 .show {
   transform: translateY(0%) !important;
   opacity: 1;
+}
+
+.souShow {
+  transform-origin: left top;
+  transform: scale(1) !important;
 }
 
 body {
@@ -183,4 +232,16 @@ body {
 
 .moveUp {
   transform: translateY(-100px);
+}
+
+
+.menu_add {
+  > .el-input {
+    margin-bottom: 15px;
+  }
+}
+
+.el-dialog {
+  border-radius: 10px;
+  z-index: 9999;
 }
