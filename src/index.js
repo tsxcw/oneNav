@@ -2,6 +2,7 @@ import "./css/index.scss";
 import {default_sou, set_sou, sou, sousearch} from "./js/sousuo"
 import {memory, throttle} from "jsb-util";
 import {install} from "./js/menu.jsx";
+import bus from "/src/js/bus"
 
 window.scrolllock = false;
 install(Vue);
@@ -23,6 +24,7 @@ const vm = new Vue({
                 time: 0
             },
             list: memory.get("list") || [],
+            lists:memory.get("lists") || [],
             mouseRight: {
                 x: 0,
                 y: 0,
@@ -58,6 +60,8 @@ const vm = new Vue({
             let list = await (await fetch('https://web.png.ink/index.php?c=api&method=link_list&limit=999999', {
                 method: 'post',
             })).json()
+            vm.lists = list.data
+            memory.set("lists", vm.lists)
             //下面是将目录和列表合并。将列表加入目录children里
             let menu = data.data;
             list.data.forEach((item) => {
@@ -70,13 +74,15 @@ const vm = new Vue({
             })
             vm.list = menu
             memory.set("list", menu)
+            await this.$nextTick(_ => {
+                sumicon()
+            })
         }
     },
     async mounted() {
         await this.fetchData()
     }
 })
-
 //监听鼠标滚动
 window.addEventListener("wheel", (event) => {
 
@@ -132,7 +138,7 @@ document.querySelector("#root").addEventListener("touchmove", function (e) {
 }, {passive: false})
 
 function sumicon() {
-    let w = document.querySelector(".drawer").clientWidth - 60;
+    let w = outerWidth - 60;
     let auto = Math.floor(w / 100);
     let l = w / auto
     if (outerWidth > 501) {
@@ -148,3 +154,7 @@ function sumicon() {
 
 sumicon();
 window.addEventListener("resize", throttle(sumicon, 200))
+
+bus.$on("cc", function () {
+    vm.drawer = true
+})

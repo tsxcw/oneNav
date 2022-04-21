@@ -31,13 +31,22 @@
             <div v-for="(ite,index) in list" :key="index" class="x-list">
                 <div class="title"><span>{{ ite.name }}</span></div>
                 <div class="y-list">
-                    <div v-for="(item,i) in ite.children" :key='i' class="dreaer-list" type="['']" @click="to(item)">
+                    <div v-for="(item,i) in ite.children" :key='i' :cdata="item.id" class="dreaer-list" ctype="[3,4]"
+                         @click="to(item)">
                         <div class="img">
                             <img :alt="item.title" :src="getIcon(item)">
                         </div>
                         <div class="name">{{ item.title }}</div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="lists.length!=0" :class="{shows:drawer}" class="bottomtab">
+        <div :style="{width:lists.length*65+'px'}" class="al">
+            <div v-for="(item,index) in lists" :key="index">
+                <img :src="getIcon(item)"/>
+<!--                <span>{{ item.title.slice(0, 1) }}</span>-->
             </div>
         </div>
     </div>

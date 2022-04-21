@@ -1,3 +1,4 @@
+const bus = require("./bus");
 exports.install = function install(Vue) {
     Vue.component('men_add',
         {
@@ -35,16 +36,22 @@ exports.install = function install(Vue) {
                         window.scrolllock = true;
                     }
                 }
+            },
+            mounted() {
+                bus.$on("show", () => {
+                    this.dialogVisible = true
+                })
             }
         })
 
 
     Vue.component("tabar", {
         template: (`<div v-show="show" class="tabar" :style="{left:mouseRight.x,top:mouseRight.y}">
-                        <div>新增目录</div>
-                        <div>删除目录</div>
-                        <div>新增链接</div>
-                        <div>删除链接</div>
+                        <div @click="addmenu">新增目录</div>
+                        <div class="addlink">新增链接</div>
+                        <div v-if="sunshow(3)" @click="dellink">删除链接</div>
+                        <div v-if="sunshow(4)" @click="updatelink">修改链接</div>
+                        <div @click="setting">个性设置</div>
                     </div>`),
         data() {
             return {
@@ -52,11 +59,32 @@ exports.install = function install(Vue) {
                     x: 0,
                     y: 0
                 },
-                show: false
+                show: false,
+                info: {},
+                ctype: [],
             }
         },
         props: ["xy", "type"],
-        methods: {},
+        methods: {
+            addmenu() {
+                bus.$emit("show", true)
+            },
+            addlink() {
+
+            },
+            dellink() {
+                console.log(this.info)
+            },
+            setting() {
+
+            },
+            updatelink() {
+                console.log(this.info)
+            },
+            sunshow(index) {
+                return Boolean(this.ctype.indexOf(index) > -1)
+            }
+        },
         mounted() {
             document.querySelector(".tabar").addEventListener("click", function (event) {
                 event.stopPropagation();
@@ -65,32 +93,32 @@ exports.install = function install(Vue) {
             document.addEventListener("click", (event) => {
                 this.show = false;
             })
-            window.addEventListener("mouseup", (e) => {
-                this.mouseRight = {
-                    x: e.clientX + 'px',
-                    y: e.clientY + 'px'
-                }
-                console.log(e)
-                if (e.button === 2) {
-                    this.show = true;
-                }
 
-                e.preventDefault()
-                e.stopPropagation();
+            window.addEventListener("mouseup", (e) => {
+                if (e.button === 2) {
+                    this.mouseRight = {
+                        x: e.clientX + 'px',
+                        y: e.clientY + 'px'
+                    }
+                    try {
+                        let t = JSON.parse(e.toElement.attributes.ctype.value)
+                        if (t.length > 0) {
+                            this.ctype = t;
+                        }
+                    } catch (e) {
+                        this.ctype = []
+                    }
+                    try {
+                        let info = e.toElement.attributes.cdata.value;
+                        this.info = info
+                    } catch (e) {
+
+                    }
+                    this.show = true;
+                    e.preventDefault()
+                    e.stopPropagation();
+                }
             })
         },
-        watch: {
-            xy({x, y}) {
-                console.log(x, y)
-                this.show = true;
-                this.mouseRight = {
-                    x: x + 'px',
-                    y: y + 'px'
-                }
-            },
-            type() {
-
-            }
-        }
     })
 }
