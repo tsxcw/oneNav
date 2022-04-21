@@ -24,6 +24,10 @@
   }
 }
 
+*::-webkit-scrollbar {
+  display: none;
+}
+
 @media screen and (min-width: 501px) {
   .search {
     width: 50%;
@@ -151,7 +155,7 @@
   position: fixed;
   height: 70%;
   width: 100vw;
-  bottom: 0px;
+  bottom: 0;
   transform: translateY(100%);
   transition: all 500ms;
   background: rgba(255, 255, 255, 0.56);
@@ -159,54 +163,71 @@
   opacity: 0;
 
   > .drawer-main {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 30px 20px;
+    margin-top: 20px;
+    position: absolute;
+    width: 100%;
+    overflow-y: scroll;
+    height: calc(100% - 20px);
+    padding: 0 0px;
 
-    > div {
-      width: 25%;
-      height: 100px;
+    > .x-list {
+      > .title {
+        margin-left: 15px;
+        font-size: 17px;
+        color: #383838;
+      }
+    }
+
+    > .x-list > .y-list {
+      margin-top: 20px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex-wrap: wrap;
 
-      > .img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50px;
-        background-color: azure;
+      > .dreaer-list {
+        width: 25%;
+        height: 100px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
 
-        > img {
-          object-fit: cover;
-          width: 25px;
-          height: 25px;
+        > .img {pointer-events: none;
+          width: 50px;
+          height: 50px;
+          border-radius: 50px;
+          background-color: azure;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          > img {
+            object-fit: cover;
+            width: 20px;
+            height: 20px;
+          }
         }
-      }
 
-      > .iconf {
-        font-size: 30px;
-        width: 60px;
-        height: 60px;
-        border-radius: 5px;
-        object-fit: cover;
-        background-color: azure;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 500;
-      }
+        > .iconf {
+          font-size: 30px;
+          width: 60px;
+          height: 60px;
+          border-radius: 5px;
+          object-fit: cover;
+          background-color: azure;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 500;
+        }
 
-      > .name {
-        width: 70px;
-        margin-top: 5px;
-        font-size: 12px;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        text-align: center;
+        > .name {
+          width: 70px;
+          margin-top: 5px;
+          font-size: 12px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          text-align: center;
+        }
       }
     }
   }
@@ -244,4 +265,30 @@ body {
 .el-dialog {
   border-radius: 10px;
   z-index: 9999;
+}
+
+
+.tabar {
+  position: fixed;
+  width: 100px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  user-select: none;
+  z-index: 9999;
+
+  > div {
+    height: 30px;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: goldenrod;
+      cursor: pointer;
+    }
+  }
 }

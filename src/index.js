@@ -22,7 +22,11 @@ const vm = new Vue({
                 y: 0,
                 time: 0
             },
-            list: memory.get("list") || []
+            list: memory.get("list") || [],
+            mouseRight: {
+                x: 0,
+                y: 0,
+            }
         }
     },
     methods: {
@@ -38,6 +42,10 @@ const vm = new Vue({
         },
         mouseMenu(event) {
             const {clientX, clientY} = event;
+            // vm.mouseRight = {
+            //     x: clientX,
+            //     y: clientY
+            // }
             event.preventDefault()
         },
         setsou(item) {
@@ -47,15 +55,20 @@ const vm = new Vue({
         },
         async fetchData() {
             let data = await (await fetch("https://web.png.ink/index.php?c=api&method=category_list",)).json()
-            console.log(data)
-            let list = await (await fetch('https://web.png.ink/index.php?c=api&method=link_list', {
+            let list = await (await fetch('https://web.png.ink/index.php?c=api&method=link_list&limit=999999', {
                 method: 'post',
-                body: JSON.stringify({
-                    category_id: data.data[0].id
-                })
             })).json()
-            vm.list = list.data
-            memory.set("list", vm.list)
+
+            let category = {}
+            list.data.forEach((item) => {
+                const {category_name: name} = item;
+                if (!category[name]) {
+                    category[name] = [];
+                }
+                category[name].push(item)
+            })
+            vm.list = category
+            memory.set("list", category)
         }
     },
     async mounted() {
@@ -65,6 +78,7 @@ const vm = new Vue({
 
 //监听鼠标滚动
 window.addEventListener("wheel", (event) => {
+
     if (scrolllock) return
     let t = new Date().getTime();
     if (t - 100 > vm.mouse.time) {
@@ -72,6 +86,7 @@ window.addEventListener("wheel", (event) => {
             if (!vm.drawer)
                 vm.drawer = true;
         } else if (event.deltaY < vm.mouse.last) {
+            if (document.querySelector(".drawer-main").scrollTop !== 0) return;
             if (vm.drawer)
                 vm.drawer = false;
         }
@@ -79,6 +94,10 @@ window.addEventListener("wheel", (event) => {
         vm.mouse.last = event.deltaY;
     }
 })
+document.querySelector(".drawer-main").addEventListener('touchmove', function (event) {
+    event.stopPropagation();
+}, {passive: false})
+
 //监听面触摸滑动事件
 document.querySelector("#root").addEventListener("touchstart", function (event) {
     if (scrolllock) return
@@ -96,22 +115,23 @@ document.querySelector("#root").addEventListener("touchend", function (event) {
     if (y === vm.touch.y) {
         return false;
     }
-    console.log(y, vm.touch.time)
-    if (t - 500 < vm.touch.time) {
+    if (t - 300 < vm.touch.time) {
         if (y + 100 < vm.touch.y) {
             vm.drawer = true;
         } else if (y - 100 > vm.touch.y) {
+            if (document.querySelector(".drawer-main").scrollTop !== 0) return;
             vm.drawer = false;
         }
     }
 })
-document.addEventListener("touchmove", function (e) {
+//阻止冒泡
+document.querySelector("#root").addEventListener("touchmove", function (e) {
+    e.stopPropagation();
     e.preventDefault()
 }, {passive: false})
 
 function sumicon() {
-
-    let w = document.querySelector(".drawer-main").clientWidth - 60;
+    let w = document.querySelector(".drawer").clientWidth - 60;
     let auto = Math.floor(w / 100);
     let l = w / auto
     if (outerWidth > 501) {
@@ -123,7 +143,6 @@ function sumicon() {
             el.style.width = "";
         })
     }
-
 }
 
 sumicon();
