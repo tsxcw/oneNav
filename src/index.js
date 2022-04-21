@@ -58,17 +58,18 @@ const vm = new Vue({
             let list = await (await fetch('https://web.png.ink/index.php?c=api&method=link_list&limit=999999', {
                 method: 'post',
             })).json()
-
-            let category = {}
+            //下面是将目录和列表合并。将列表加入目录children里
+            let menu = data.data;
             list.data.forEach((item) => {
                 const {category_name: name} = item;
-                if (!category[name]) {
-                    category[name] = [];
+                const index = menu.findIndex(el => el.name === name);
+                if (!menu[index].children) {
+                    menu[index].children = [];
                 }
-                category[name].push(item)
+                menu[index].children.push(item)
             })
-            vm.list = category
-            memory.set("list", category)
+            vm.list = menu
+            memory.set("list", menu)
         }
     },
     async mounted() {

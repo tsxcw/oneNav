@@ -10,7 +10,7 @@
 </head>
 <body>
 <div id="root" @contextmenu="mouseMenu">
-    <div class="main-page" >
+    <div class="main-page">
         <div :class="{moveUp:drawer}" class="search">
             <div class="inp">
                 <div class="search-type" @click="souStatus = !souStatus">
@@ -25,15 +25,13 @@
                 </div>
             </div>
         </div>
-
-        <men_add></men_add>
     </div>
     <div :class="{show:drawer}" class="drawer">
         <div class="drawer-main">
             <div v-for="(ite,index) in list" :key="index" class="x-list">
-                <div class="title"><span>{{ index }}</span></div>
+                <div class="title"><span>{{ ite.name }}</span></div>
                 <div class="y-list">
-                    <div v-for="(item,i) in ite" :key='i' type="['']" class="dreaer-list" @click="to(item)">
+                    <div v-for="(item,i) in ite.children" :key='i' class="dreaer-list" type="['']" @click="to(item)">
                         <div class="img">
                             <img :alt="item.title" :src="getIcon(item)">
                         </div>
@@ -44,6 +42,7 @@
         </div>
     </div>
     <tabar :xy="mouseRight"></tabar>
+    <men_add></men_add>
 </div>
 </body>
 
