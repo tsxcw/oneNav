@@ -17,10 +17,13 @@
   "dependencies": {
     "@vue/babel-helper-vue-jsx-merge-props": "^1.2.1",
     "@vue/babel-preset-jsx": "^1.2.4",
+    "axios": "^0.26.1",
     "css-loader": "^6.7.1",
     "element-ui": "^2.15.8",
     "file-loader": "^6.2.0",
+    "js-md5": "^0.7.3",
     "jsb-util": "^1.0.7",
+    "md5": "^2.3.0",
     "mini-css-extract-plugin": "^2.6.0",
     "node-sass": "^7.0.1",
     "sass": "^1.50.1",

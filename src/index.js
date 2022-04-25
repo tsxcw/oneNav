@@ -3,8 +3,43 @@ import {default_sou, set_sou, sou, sousearch} from "./js/sousuo"
 import {memory, throttle} from "jsb-util";
 import {install} from "./js/menu.jsx";
 import bus from "/src/js/bus"
+import axios from "axios";
+import md5 from "js-md5"
 
+const option = [{
+    icon: require("/src/assets/bilibili.png"),
+    name: 'bilibili',
+    href: 'https://bilibili.com'
+}, {
+    icon: require("/src/assets/csdn.png"),
+    name: 'csdn',
+    href: 'https://csdn.com'
+}]
+axios.defaults.baseURL = "https://web.png.ink"
+const token = md5("xiaozxiaoz.me")
 window.scrolllock = false;
+axios.interceptors.request.use((config) => {
+    config.headers['Content-Type'] = "application/x-www-form-urlencoded; charset=UTF-8";
+    if (config.method === "post")
+        if (typeof config.data == "object")
+            config.data['token'] = token
+        else
+            config.data = {token: token}
+    config.transformRequest = [
+        function (data) {
+            let ret = '';
+            for (let it in data) {
+                // 中文编码
+                if (data[it] != '' || data[it] == 0) {
+                    //值为空的全部剔除
+                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
+                }
+            }
+            return ret;
+        },
+    ];
+    return config
+})
 install(Vue);
 const vm = new Vue({
     el: '#root',
@@ -13,10 +48,6 @@ const vm = new Vue({
             search: '',
             drawer: false,
             souStatus: false,
-            mouse: {
-                last: 0,
-                time: 0
-            },
             sou: sou,
             default_sou,
             touch: {
@@ -24,7 +55,7 @@ const vm = new Vue({
                 time: 0
             },
             list: memory.get("list") || [],
-            lists:memory.get("lists") || [],
+            lists: option,
             mouseRight: {
                 x: 0,
                 y: 0,
@@ -56,12 +87,10 @@ const vm = new Vue({
             this.souStatus = false
         },
         async fetchData() {
-            let data = await (await fetch("https://web.png.ink/index.php?c=api&method=category_list",)).json()
-            let list = await (await fetch('https://web.png.ink/index.php?c=api&method=link_list&limit=999999', {
-                method: 'post',
-            })).json()
+            let data = (await axios.get("https://web.png.ink/index.php?c=api&method=category_list")).data
+            let list = (await axios.post('https://web.png.ink/index.php?c=api&method=link_list&limit=999999')).data
             vm.lists = list.data
-            memory.set("lists", vm.lists)
+            memory.set("lists", list.data)
             //下面是将目录和列表合并。将列表加入目录children里
             let menu = data.data;
             list.data.forEach((item) => {
@@ -77,6 +106,9 @@ const vm = new Vue({
             await this.$nextTick(_ => {
                 sumicon()
             })
+        },
+        async addMenu() {
+            axios.post("", {})
         }
     },
     async mounted() {
@@ -85,20 +117,19 @@ const vm = new Vue({
 })
 //监听鼠标滚动
 window.addEventListener("wheel", (event) => {
-
-    if (scrolllock) return
-    let t = new Date().getTime();
-    if (t - 100 > vm.mouse.time) {
-        if (event.deltaY > vm.mouse.last) {
-            if (!vm.drawer)
-                vm.drawer = true;
-        } else if (event.deltaY < vm.mouse.last) {
-            if (document.querySelector(".drawer-main").scrollTop !== 0) return;
-            if (vm.drawer)
-                vm.drawer = false;
-        }
-        vm.mouse.time = t;
-        vm.mouse.last = event.deltaY;
+    if (window.scrolllock) return;
+    let fangxiang = Boolean(event.deltaY > 0);
+    const drawer = document.querySelector(".drawer-main");
+    if (fangxiang) {
+        if (!vm.drawer)
+            setTimeout(_ => {
+                drawer.style.overflowY = "scroll"
+            }, 200)
+        vm.drawer = true;
+    } else {
+        if (drawer.scrollTop !== 0) return;
+        vm.drawer = false;
+        drawer.style.overflowY = "hidden"
     }
 })
 document.querySelector(".drawer-main").addEventListener('touchmove', function (event) {

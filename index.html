@@ -29,7 +29,7 @@
     <div :class="{show:drawer}" class="drawer">
         <div class="drawer-main">
             <div v-for="(ite,index) in list" :key="index" class="x-list">
-                <div class="title"><span>{{ ite.name }}</span></div>
+                <div :cdata="ite.id" class="title" ctype="[2]"><span>{{ ite.name }}</span></div>
                 <div class="y-list">
                     <div v-for="(item,i) in ite.children" :key='i' :cdata="item.id" class="dreaer-list" ctype="[3,4]"
                          @click="to(item)">
@@ -45,13 +45,14 @@
     <div v-if="lists.length!=0" :class="{shows:drawer}" class="bottomtab">
         <div :style="{width:lists.length*65+'px'}" class="al">
             <div v-for="(item,index) in lists" :key="index">
-                <img :src="getIcon(item)"/>
-<!--                <span>{{ item.title.slice(0, 1) }}</span>-->
+                <img :src="item.icon"/>
+                <!--                <span>{{ item.title.slice(0, 1) }}</span>-->
             </div>
         </div>
     </div>
     <tabar :xy="mouseRight"></tabar>
-    <men_add></men_add>
+    <add_link></add_link>
+    <add_menus></add_menus>
 </div>
 </body>
 
