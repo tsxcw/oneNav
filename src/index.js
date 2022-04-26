@@ -117,12 +117,16 @@ const vm = new Vue({
             if (index1 > -1) {//如果历史记录存在，则删除
                 this.history.splice(index1, 1)
             }
-            this.history.unshift({
-                url: url,
-                title: info.title
-            })//删除后向数组最开始插入数据
-            memory.set("history", this.history.slice(0, 8));
-            location.href = url;//跳转
+            if (index > -1) {
+                this.history.unshift({
+                    url: url,
+                    title: info.title,
+                    description: info.description
+                })//删除后向数组最开始插入数据
+                memory.set("history", this.history.slice(0, 8));
+            }
+            const tempwindow = window.open();
+            tempwindow.location = url;
         }
         ,
         getIcon(item) {

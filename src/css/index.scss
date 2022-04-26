@@ -32,6 +32,9 @@
   .bottomtab {
     display: none !important;
   }
+  .span {
+    width: 80px !important
+  }
 }
 
 [v-cloak] {
@@ -193,7 +196,7 @@
         justify-content: center;
         cursor: pointer;
 
-        > div {
+        > .img {
           pointer-events: none;
           width: 50px;
           height: 50px;
@@ -210,9 +213,10 @@
           }
         }
 
-        > span {
+        > .span {
           pointer-events: none;
           max-width: 90%;
+          width: 100px;
           margin-top: 10px;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -451,6 +455,7 @@ body {
     font-weight: 300;
     font-size: 15px;
     user-select: none;
+
     &:hover {
       color: goldenrod;
       cursor: pointer;
