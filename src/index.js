@@ -145,8 +145,8 @@ const vm = new Vue({
         }
         ,
         async fetchData() {
-            let data = (await axios.get("https://web.png.ink/index.php?c=api&method=category_list")).data
-            let list = (await axios.post('https://web.png.ink/index.php?c=api&method=link_list&limit=999999')).data
+            let data = (await axios.get("/index.php?c=api&method=category_list&limit=999999")).data
+            let list = (await axios.post('/index.php?c=api&method=link_list&limit=999999')).data
             vm.lists = list.data
             memory.set("lists", list.data)
             //下面是将目录和列表合并。将列表加入目录children里
