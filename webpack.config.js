@@ -16,10 +16,6 @@ module.exports = {
             title: 'Development',
             template: './index.html'
         }),
-        new HtmlWebpackPlugin({
-            template: './src/view/login.html',
-            filename: "login.html"
-        }),
         new MiniCssExtractPlugin({
             filename: `[name]${time}.css`
         }),
