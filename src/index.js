@@ -15,16 +15,20 @@ const option = [{
     name: 'csdn',
     href: 'https://csdn.com'
 }]
-axios.defaults.baseURL = "https://web.png.ink"
-const token = md5("xiaozxiaoz.me")
+let token = false;
+if (location.hostname === "localhost") {
+    axios.defaults.baseURL = "https://web.png.ink"
+    token = md5("xiaozxiaoz.me")
+}
 window.scrolllock = false;
 axios.interceptors.request.use((config) => {
     config.headers['Content-Type'] = "application/x-www-form-urlencoded; charset=UTF-8";
     if (config.method === "post")
-        if (typeof config.data == "object")
-            config.data['token'] = token
-        else
-            config.data = {token: token}
+        if (token)
+            if (typeof config.data == "object")
+                config.data['token'] = token
+            else
+                config.data = {token: token}
     config.transformRequest = [
         function (data) {
             let ret = '';
@@ -45,6 +49,9 @@ const vm = new Vue({
     el: '#root',
     data() {
         return {
+            searchPreview: false,
+            searchList: [],
+            history: memory.get("history") || [],
             search: '',
             drawer: false,
             souStatus: false,
@@ -64,28 +71,79 @@ const vm = new Vue({
     },
     methods: {
         search_go() {
+            if (this.CHECK_URL(this.search)) {
+                if (/^http/.test(this.search)) {
+                    location.href = this.search;
+                } else {
+                    location.href = "//" + this.search;
+                }
+                return;
+            }
             sousearch(this.search)
         },
-        to({url}) {
-            location.href = url;
+        /**
+         * 正则表达式判定Url
+         * @param url
+         * @returns {Boolean}
+         */
+        CHECK_URL(url) {
+            //url= 协议://(ftp的登录信息)[IP|域名](:端口号)(/或?请求参数)
+            var strRegex = '^((https|http|ftp)://)?'//(https或http或ftp):// 可有可无
+                + '(([\\w_!~*\'()\\.&=+$%-]+: )?[\\w_!~*\'()\\.&=+$%-]+@)?' //ftp的user@  可有可无
+                + '(([0-9]{1,3}\\.){3}[0-9]{1,3}' // IP形式的URL- 3位数字.3位数字.3位数字.3位数字
+                + '|' // 允许IP和DOMAIN（域名）
+                + '(localhost)|'	//匹配localhost
+                + '([\\w_!~*\'()-]+\\.)*' // 域名- 至少一个[英文或数字_!~*\'()-]加上.
+                + '\\w+\\.' // 一级域名 -英文或数字  加上.
+                + '[a-zA-Z]{1,6})' // 顶级域名- 1-6位英文
+                + '(:[0-9]{1,5})?' // 端口- :80 ,1-5位数字
+                + '((/?)|' // url无参数结尾 - 斜杆或这没有
+                + '(/[\\w_!~*\'()\\.;?:@&=+$,%#-]+)+/?)$';//请求参数结尾- 英文或数字和[]内的各种字符
+
+            var strRegex1 = '^(?=^.{3,255}$)((http|https|ftp)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/)?(?:\/(.+)\/?$)?(\/\w+\.\w+)*([\?&]\w+=\w*|[\u4e00-\u9fa5]+)*$';
+            var re = new RegExp(strRegex, 'i');//i不区分大小写
+            console.log(re);
+            //将url做uri转码后再匹配，解除请求参数中的中文和空字符影响
+            if (re.test(encodeURI(url))) {
+                return (true);
+            } else {
+                return (false);
+            }
         },
+        to({url}) {
+            const index = this.lists.findIndex(el => el.url === url)//查找本地的信息
+            const info = this.lists[index];
+            const index1 = this.history.findIndex(it => it.url === url);
+            if (index1 > -1) {//如果历史记录存在，则删除
+                this.history.splice(index1, 1)
+            }
+            this.history.unshift({
+                url: url,
+                title: info.title
+            })//删除后向数组最开始插入数据
+            memory.set("history", this.history.slice(0, 8));
+            location.href = url;//跳转
+        }
+        ,
         getIcon(item) {
             if (item.url)
                 return "https://favicon.rss.ink/v1/" + btoa(item.url);
+        }
+        ,
+        login() {
+            location.href = '/index.php?c=login'
         },
         mouseMenu(event) {
             const {clientX, clientY} = event;
-            // vm.mouseRight = {
-            //     x: clientX,
-            //     y: clientY
-            // }
             event.preventDefault()
-        },
+        }
+        ,
         setsou(item) {
             set_sou(item);
             this.default_sou = item;
             this.souStatus = false
-        },
+        }
+        ,
         async fetchData() {
             let data = (await axios.get("https://web.png.ink/index.php?c=api&method=category_list")).data
             let list = (await axios.post('https://web.png.ink/index.php?c=api&method=link_list&limit=999999')).data
@@ -106,13 +164,52 @@ const vm = new Vue({
             await this.$nextTick(_ => {
                 sumicon()
             })
-        },
-        async addMenu() {
-            axios.post("", {})
+        }
+        ,
+        searchPreviewRender() {
+            const val = this.search
+            // this.searchPreview = val.split("").length > 0;
+            const list = memory.get("lists") || []
+            let tmp = [];
+            list.forEach(el => {
+                if (el.title.toLowerCase().indexOf(this.search.toLowerCase()) !== -1) {
+                    tmp.push({
+                        title: el.title.replace(RegExp(this.search, "ig"), `<b>${this.search}</b>`),
+                        url: el.url,
+                        description: el.description
+                    })
+                }
+            })
+            this.searchPreview = Boolean(tmp.length > 0)
+            this.searchList = tmp.slice(0, 10)
+            if (this.drawer)
+                this.drawer = false;
+        }
+        ,
+        closePreview() {
+            setTimeout(_ => {
+                this.searchPreview = false
+            }, 100)
         }
     },
     async mounted() {
         await this.fetchData()
+        bus.$on("delhistory", (e) => {
+            const index = this.history.findIndex(it => it.url === e);
+            this.history.splice(index, 1)
+            memory.set("history", this.history)
+        })
+    }
+    ,
+    watch: {
+        search(val) {
+            this.searchPreviewRender()
+        }
+        ,
+        drawer(val) {
+            if (val)
+                vm.searchPreview = false
+        }
     }
 })
 //监听鼠标滚动

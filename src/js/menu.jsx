@@ -5,7 +5,7 @@ exports.install = function install(Vue) {
     Vue.component('add_link',
         {
             template: (`
-                 <el-dialog :close-on-click-modal="false" append-to-body :visible.sync="dialogVisible" title="添加链接" width="500px">
+                 <el-dialog :close-on-click-modal="false" append-to-body :visible.sync="dialogVisible" :title="!isedit?'添加链接':'修改链接'" :width="sumwidth(dialogVisible)">
                      <div class="menu_add">
                          <el-input placeholder="请输入完整的网址链接" v-model="addInfo.url"></el-input>
                          <el-input placeholder="请输入备用链接，没有请留空" v-model="addInfo.url_standby"></el-input>
@@ -32,6 +32,8 @@ exports.install = function install(Vue) {
                 `),
             methods: {
                 submit(type) {
+                    if (this.addInfo.url === "") return this.$message.error("缺少url地址")
+                    if (this.addInfo.title === "") return this.$message.error("缺少标题")
                     const data = {...this.addInfo};
                     let url = ""
                     if (this.isedit) {
@@ -51,6 +53,12 @@ exports.install = function install(Vue) {
                         }
                     })
 
+                },
+                sumwidth() {
+                    if (outerWidth > 500) {
+                        return '500px'
+                    }
+                    return "375px"
                 }
             },
             data() {
@@ -100,7 +108,8 @@ exports.install = function install(Vue) {
                         <div class="addlink" @click="addlink">新增链接</div>
                         <div v-if="sunshow(3)" @click="dellink">删除链接</div>
                         <div v-if="sunshow(4)" @click="updatelink">修改链接</div>
-                        <div @click="setting">个性设置</div>
+                        <div v-if="sunshow(5)" @click="delhistory">删除记录</div>
+<!--                        <div @click="setting">个性设置</div>-->
                     </div>`),
         data() {
             return {
@@ -122,6 +131,10 @@ exports.install = function install(Vue) {
             addlink() {
                 bus.$emit("show", true)
             },
+            delhistory() {
+                bus.$emit("delhistory", this.info)
+                this.show = false
+            },
             async delmenu() {
                 try {
                     await this.$confirm("是否删除？")
@@ -139,6 +152,7 @@ exports.install = function install(Vue) {
                         this.$message.error("删除失败")
                     }
                 })
+                this.show = false
             },
             async dellink() {
                 try {
@@ -161,6 +175,7 @@ exports.install = function install(Vue) {
                         this.$message.error("删除失败")
                     }
                 })
+                this.show = false
             },
             setting() {
 
@@ -170,8 +185,8 @@ exports.install = function install(Vue) {
                 const index = lists.findIndex(e => e.id == this.info)
                 if (index === -1) return false;
                 const info = lists[index];
-
                 bus.$emit("showandupdate", info)
+                this.show = false
             },
             sunshow(index) {
                 return Boolean(this.ctype.indexOf(index) > -1)
@@ -185,6 +200,42 @@ exports.install = function install(Vue) {
             document.addEventListener("click", (event) => {
                 this.show = false;
             })
+            const touch = {
+                isdown: false,
+                time: null,
+            }
+            window.addEventListener("touchstart", (e) => {
+                touch.isdown = true;
+                touch.time = new Date().getTime();
+                touch.time = setTimeout(_ => {
+                    this.mouseRight = {
+                        x: e.changedTouches[0].clientX + 'px',
+                        y: e.changedTouches[0].clientY + 'px'
+                    }
+                    try {
+                        let t = JSON.parse(e.target.attributes.ctype.value)
+                        if (t.length > 0) {
+                            this.ctype = t;
+                        }
+                    } catch (e) {
+                        this.ctype = []
+                    }
+                    try {
+                        let info = e.target.attributes.cdata.value;
+                        this.info = info
+                        this.element = e.target
+                    } catch (e) {
+                    }
+                    this.show = true;
+                }, 500)
+            })
+            window.addEventListener("touchend", function () {
+                touch.isdown = false;
+                clearTimeout(touch.time)
+                touch.time = null;
+
+            })
+
 
             window.addEventListener("mouseup", (e) => {
                 if (e.button === 2) {
@@ -219,7 +270,7 @@ exports.install = function install(Vue) {
     Vue.component('add_menus',
         {
             template: (`
-                 <el-dialog :close-on-click-modal="false" append-to-body :visible.sync="dialogVisible" title="添加链接" width="500px">
+                 <el-dialog :close-on-click-modal="false" append-to-body :visible.sync="dialogVisible" title="添加目录" :width="sumwidth(dialogVisible)">
                      <div class="menu_add">
                          <el-input placeholder="请输入分类名称" v-model="addInfo.name"></el-input>
                          <el-input placeholder="请输入站点描述（完整）" show-word-limit maxlength="300" type="textarea" v-model="addInfo.description"></el-input>
@@ -241,6 +292,7 @@ exports.install = function install(Vue) {
                 `),
             methods: {
                 submit() {
+                    if (this.addInfo.name === "") return this.$message.error("缺少目录名称")
                     const data = {...this.addInfo};
                     data.property = this.addInfo.property ? 0 : 1;
                     axios.post("/index.php?c=api&method=add_category", data).then(e => {
@@ -254,6 +306,12 @@ exports.install = function install(Vue) {
                         }
                     })
 
+                },
+                sumwidth() {
+                    if (outerWidth > 500) {
+                        return '500px'
+                    }
+                    return "375px"
                 }
             },
             data() {
