@@ -1,6 +1,6 @@
 @media screen and (max-width: 500px) {
   .search {
-    padding: 0px 30px;
+    padding: 0 30px;
 
     > .inp {
       height: 45px;
@@ -65,13 +65,13 @@
 
 
 * {
-  margin: 0px;
-  padding-left: 0px;
+  margin: 0;
+  padding-left: 0;
 }
 
 #root {
   position: fixed;
-  top: 0px;
+  top: 0;
   width: 100vw;
   height: 100vh;
   background: url("https://img.tshy.xyz/5759") no-repeat center/cover;
@@ -104,7 +104,7 @@
           display: flex;
           cursor: pointer;
           align-items: center;
-          padding: 3px 0px;
+          padding: 3px 0;
 
           &:hover {
             background-color: rgba(206, 206, 206, 0.24);
@@ -165,7 +165,7 @@
         height: 100%;
         border: none;
         outline: none;
-        padding: 0px 15px;
+        padding: 0 15px;
         font-size: 16px;
         font-weight: 600;
         text-overflow: ellipsis;
@@ -290,7 +290,7 @@
     width: 100%;
     overflow-y: hidden;
     height: calc(100% - 20px);
-    padding: 0 0px;
+    padding: 0 0;
 
     > .x-list {
       > .title {
@@ -386,7 +386,7 @@
 
 body {
   position: fixed;
-  top: 0px;
+  top: 0;
   height: 100vh;
   width: 100vw;
   overscroll-behavior-y: contain;
@@ -547,7 +547,7 @@ body {
 
 footer {
   position: fixed;
-  bottom: 0px;
+  bottom: 0;
   height: 30px;
   width: 100%;
   display: flex;

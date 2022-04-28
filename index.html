@@ -16,7 +16,7 @@
         <div :class="{moveUp:drawer}" class="search">
             <div class="inp">
                 <div class="search-type" @click="souStatus = !souStatus">
-                    <img :src="default_sou.icon"/>
+                    <img :src="default_sou.icon" alt=""/>
                 </div>
                 <input v-model="search" placeholder="搜一搜？" @focus="searchPreviewRender" @focusout="closePreview"
                        @keyup.enter="search_go">
@@ -33,7 +33,7 @@
                         <li v-for="(li,index) in searchList" :key="index" @click="to(li)">
                             <span v-html="li.title"></span>
                             <span>{{ li.description }}</span>
-                        </li>
+                        </li>fxd
                     </ul>
                 </div>
             </transition>
@@ -41,7 +41,7 @@
                 <div v-if="!drawer&&!searchPreview" class="history">
                     <transition v-for="(item,index) in history" :key="index">
                         <div :cdata="item.url" :title="item.description" class="item" ctype="[5]" @click="to(item)">
-                            <div class="img"><img :src="getIcon(item)"></div>
+                            <div class="img"><img :src="getIcon(item)" alt=""></div>
                             <div class="span">{{ item.title }}</div>
                         </div>
                     </transition>
