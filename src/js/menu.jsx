@@ -273,6 +273,7 @@ exports.install = function install(Vue) {
                  <el-dialog :close-on-click-modal="false" append-to-body :visible.sync="dialogVisible" title="添加目录" :width="sumwidth(dialogVisible)">
                      <div class="menu_add">
                          <el-input placeholder="请输入分类名称" v-model="addInfo.name"></el-input>
+                         <el-input placeholder="请输入图标类名 不要删除fa (fa 图标名称)" v-model="addInfo.font_icon" ></el-input>
                          <el-input placeholder="请输入站点描述（完整）" show-word-limit maxlength="300" type="textarea" v-model="addInfo.description"></el-input>
                          <div class="other">
                          <el-input placeholder="权重（0-99）" v-model="addInfo.weight"></el-input>
@@ -283,6 +284,7 @@ exports.install = function install(Vue) {
                              inactive-color="#ff4949">
                         </el-switch>
                          </div>
+                         <span>图标查看地址 <a href="https://fontawesome.dashgame.com" target="_blank">https://fontawesome.dashgame.com</a></span>
                     </div>
                      <span slot="footer" class="dialog-footer">
                        <el-button @click="dialogVisible = false">取 消</el-button>
@@ -322,7 +324,8 @@ exports.install = function install(Vue) {
                         name: '',
                         weight: '',
                         property: true,
-                        description: ''
+                        description: '',
+                        font_icon: 'fa '
                     }
                 }
             },
