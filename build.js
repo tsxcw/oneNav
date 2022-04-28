@@ -31,7 +31,7 @@ link.map(el => {
 $("title").text("<?php echo $site['title']; ?> - <?php echo $site['subtitle']; ?>")
 let result = $.html();
 //转义php标签为正常标签
-result = result.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+result = result.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, '&')
 fs.writeFileSync(newPath, result)
 
 

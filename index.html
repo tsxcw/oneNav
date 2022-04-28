@@ -42,7 +42,7 @@
                     <transition v-for="(item,index) in history" :key="index">
                         <div :cdata="item.url" :title="item.description" class="item" ctype="[5]" @click="to(item)">
                             <div class="img"><img :src="getIcon(item)"></div>
-                            <div class="span">{{ item.title }}12312312312312312312</div>
+                            <div class="span">{{ item.title }}</div>
                         </div>
                     </transition>
                 </div>
