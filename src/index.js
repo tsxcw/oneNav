@@ -15,6 +15,7 @@ const option = [{
     href: 'https://csdn.com'
 }]
 let token = false;
+axios.defaults.baseURL = "";
 if (location.hostname === "localhost") {
     axios.defaults.baseURL = "https://web.png.ink"
     token = "a63d21e1946cf0746056c75550a787c6" //开发环境的token
