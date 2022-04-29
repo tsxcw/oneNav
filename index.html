@@ -6,14 +6,12 @@
     <meta content="<?php echo $site['keywords']; ?>" name="keywords"/>
     <meta content="<?php echo $site['description']; ?>" name="description"/>
     <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <link href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script dev="vue.js" src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script dev="element.js" src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
 <div v-cloak id="root" @contextmenu="mouseMenu">
-    <div class="main-page">
+    <div class="main-page" ctype="[6]">
         <div :class="{moveUp:drawer}" class="search">
             <div class="inp">
                 <div class="search-type" @click="souStatus = !souStatus">
@@ -39,11 +37,11 @@
                 </div>
             </transition>
             <transition name="showings">
-                <div v-if="!drawer&&!searchPreview" class="history">
+                <div v-if="!drawer&&!searchPreview&&history.length!=0" class="history">
                     <transition v-for="(item,index) in history" :key="index">
                         <div :cdata="item.url" :title="item.description" class="item" ctype="[5]" @click="to(item)">
                             <div class="img"><img :src="getIcon(item)"></div>
-                            <div class="span">{{ item.title }}12312312312312312312</div>
+                            <div class="span">{{ item.title }}</div>
                         </div>
                     </transition>
                 </div>
@@ -53,14 +51,14 @@
     <div :class="{show:drawer}" class="drawer">
         <div class="drawer-main">
             <div v-for="(ite,index) in list" :key="index" class="x-list">
-                <div :cdata="ite.id" class="title" ctype="[2]">
+                <div :cdata="ite.id" class="title" ctype="[1,2]">
                     <i :class="ite?.font_icon"></i>
                     <span>{{ ite.name }}</span>
                 </div>
                 <div class="y-list">
-                    <div v-for="(item,i) in ite.children" :key='i' :cdata="item.id" class="dreaer-list"
-                         ctype="[3,4]"
-                         @click="to(item) " :title="item.description">
+                    <div v-for="(item,i) in ite.children" :key='i' :cdata="item.id" :title="item.description"
+                         class="dreaer-list"
+                         ctype="[3,4]" @click="to(item) ">
                         <div class="img">
                             <img :alt="item.title" :src="getIcon(item)">
                         </div>
@@ -82,9 +80,9 @@
     <add_link></add_link>
     <add_menus></add_menus>
     <footer v-show="!drawer">
-        <span>© 2022 Powered by <a href="https://github.com/helloxz/onenav">OneNav</a> The theme author is <a
-                href="https://github.com/tsxcw/oneNav">tushan</a>    <span style="cursor: pointer"
-                                                                           @click="login">login in</span></span>
+        <span>© 2022 Powered by <a href="https://github.com/helloxz/onenav">OneNav</a> ---> <span
+                style="cursor: pointer"
+                @click="login">login in</span></span>
     </footer>
 </div>
 </body>

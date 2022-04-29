@@ -92,6 +92,7 @@ exports.install = function install(Vue) {
                     this.dialogVisible = true
                 })
                 bus.$on("showandupdate", (e) => {
+                    this.option = memory.get("list") || [];
                     this.addInfo = e
                     this.addInfo.property = e.property == 0 ? true : false
                     this.dialogVisible = true
@@ -104,11 +105,14 @@ exports.install = function install(Vue) {
     Vue.component("tabar", {
         template: (`<div v-show="show" class="tabar" :style="{left:mouseRight.x,top:mouseRight.y}">
                         <div @click="addmenu">新增目录</div>
+                        <div v-if="sunshow(1)" @click="updatemenu">修改目录</div>
                         <div v-if="sunshow(2)" @click="delmenu" >删除目录</div>
                         <div class="addlink" @click="addlink">新增链接</div>
                         <div v-if="sunshow(3)" @click="dellink">删除链接</div>
                         <div v-if="sunshow(4)" @click="updatelink">修改链接</div>
                         <div v-if="sunshow(5)" @click="delhistory">删除记录</div>
+                        <div @click="swiptBg">换个背景</div>
+                        <div v-if="sunshow(6)" @click="downbg" >下载壁纸</div>
 <!--                        <div @click="setting">个性设置</div>-->
                     </div>`),
         data() {
@@ -128,11 +132,51 @@ exports.install = function install(Vue) {
             addmenu() {
                 bus.$emit("menushow", true)
             },
+            downbg() {
+                const data = base64ToBlob(memory.get("bg"));
+                let a = document.createElement("a");
+                a.href = URL.createObjectURL(data);
+                a.download = "壁纸.jpg"
+                a.click();
+            },
+            updatemenu() {
+                const list = memory.get("list") || []
+                const index = list.findIndex(e => e.id == this.info)
+                if (index === -1) return false;
+                const info = list[index];
+                bus.$emit("menushow", info)
+                this.show = false
+            },
             addlink() {
                 bus.$emit("show", true)
             },
             delhistory() {
                 bus.$emit("delhistory", this.info)
+                this.show = false
+            },
+            swiptBg() {
+                let data = new FileReader()
+                data.onload = (er) => {
+                    const base = data.result;
+                    if (base.length < 100) {
+                        this.$notify.error({
+                            title: '出现异常',
+                            message: '没有切换成功'
+                        });
+                    }
+                    memory.set("bg", base)
+                }
+                this.$notify.info({
+                    title: '切换中',
+                    message: '请稍等片刻，我处理一下'
+                });
+                fetch(axios.defaults.baseURL + "/background.php").then(ell => {
+                    ell.blob().then(cc => {
+                        data.readAsDataURL(cc);
+                        const ac = URL.createObjectURL(cc)
+                        document.querySelector("#root").style.background = `url(${ac})`
+                    })
+                })
                 this.show = false
             },
             async delmenu() {
@@ -179,6 +223,7 @@ exports.install = function install(Vue) {
             },
             setting() {
 
+                this.show = false;
             },
             updatelink() {
                 const lists = memory.get("lists") || []
@@ -276,6 +321,9 @@ exports.install = function install(Vue) {
                          <el-input placeholder="请输入图标类名 不要删除fa (fa 图标名称)" v-model="addInfo.font_icon" ></el-input>
                          <el-input placeholder="请输入站点描述（完整）" show-word-limit maxlength="300" type="textarea" v-model="addInfo.description"></el-input>
                          <div class="other">
+                          <el-select v-model="addInfo.fid" placeholder="父级菜单，非必选">
+                            <el-option :value="it.id" :label="it.name" v-for="(it,index) in option" :key="index"></el-option>
+                         </el-select>
                          <el-input placeholder="权重（0-99）" v-model="addInfo.weight"></el-input>
                          <el-switch
                              v-model="addInfo.property"
@@ -284,7 +332,7 @@ exports.install = function install(Vue) {
                              inactive-color="#ff4949">
                         </el-switch>
                          </div>
-                         <span>图标查看地址 <a href="https://fontawesome.dashgame.com" target="_blank">https://fontawesome.dashgame.com</a></span>
+                         <div style="margin:15px 0px;">图标查看地址 <a href="https://fontawesome.dashgame.com" target="_blank">https://fontawesome.dashgame.com</a></div>
                     </div>
                      <span slot="footer" class="dialog-footer">
                        <el-button @click="dialogVisible = false">取 消</el-button>
@@ -297,7 +345,10 @@ exports.install = function install(Vue) {
                     if (this.addInfo.name === "") return this.$message.error("缺少目录名称")
                     const data = {...this.addInfo};
                     data.property = this.addInfo.property ? 0 : 1;
-                    axios.post("/index.php?c=api&method=add_category", data).then(e => {
+                    let url = "/index.php?c=api&method=add_category"
+                    if (this.isedit)
+                        url = "/index.php?c=api&method=edit_category"
+                    axios.post(url, data).then(e => {
                         const {code} = e.data;
                         if (code === 0) {
                             this.$message.success("添加成功")
@@ -325,8 +376,10 @@ exports.install = function install(Vue) {
                         weight: '',
                         property: true,
                         description: '',
-                        font_icon: 'fa '
-                    }
+                        font_icon: 'fa ',
+                        fid:""
+                    },
+                    isedit: false
                 }
             },
             watch: {
@@ -339,8 +392,23 @@ exports.install = function install(Vue) {
                 }
             },
             mounted() {
-                bus.$on("menushow", () => {
-                    this.option = memory.get("list") || [];
+                bus.$on("menushow", (info) => {
+                    let arr = [];
+                    memory.get("list").forEach(el => {
+                        if (el.fid == '0') {
+                            arr.push(el)
+                        }
+                    })
+                    this.option = arr;
+                    if (info !== true) {
+                        for (const item in this.addInfo) {
+                            this.addInfo[item] = info[item]
+                        }
+                        this.addInfo.property = Boolean(info["property"] !== 1)
+                        this.addInfo.id = info.id;
+                        this.addInfo.fid = info.fid;
+                        this.isedit = true
+                    }
                     this.dialogVisible = true
                 })
             }

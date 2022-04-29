@@ -1,3 +1,6 @@
+@import "element.scss";
+@import "icon.scss";
+
 @media screen and (max-width: 500px) {
   .search {
     padding: 0 30px;
@@ -75,6 +78,7 @@
   width: 100vw;
   height: 100vh;
   background: url("https://img.tshy.xyz/5759") no-repeat center/cover;
+  transition: background 1s;
   overflow: hidden;
 }
 
@@ -222,7 +226,8 @@
           white-space: nowrap;
           overflow: hidden;
           font-size: 13px;
-          font-weight: 300;
+          font-weight: 400;
+          text-shadow: 0 0 5px rgba(239, 239, 239, 0.73);
           text-align: center;
         }
       }

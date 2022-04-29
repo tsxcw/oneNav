@@ -4,7 +4,6 @@ import {memory, throttle} from "jsb-util";
 import {install} from "./js/menu.jsx";
 import bus from "/src/js/bus"
 import axios from "axios";
-import md5 from "js-md5"
 
 const option = [{
     icon: require("/src/assets/bilibili.png"),
@@ -18,7 +17,7 @@ const option = [{
 let token = false;
 if (location.hostname === "localhost") {
     axios.defaults.baseURL = "https://web.png.ink"
-    token = md5("xiaozxiaoz.me")
+    token = "a63d21e1946cf0746056c75550a787c6" //开发环境的token
 }
 window.scrolllock = false;
 axios.interceptors.request.use((config) => {
@@ -290,3 +289,27 @@ window.addEventListener("resize", throttle(sumicon, 200))
 bus.$on("cc", function () {
     vm.drawer = true
 })
+
+window.base64ToBlob = (urlData, type) => {
+    let arr = urlData.split(',');
+    let mime = arr[0].match(/:(.*?);/)[1] || type;
+    let bytes = window.atob(arr[1]);
+    let ab = new ArrayBuffer(bytes.length);
+    let ia = new Uint8Array(ab);
+    for (let i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i);
+    }
+    return new Blob([ab], {
+        type: mime
+    });
+}
+let base = memory.get("bg");
+if (base) {
+    if (base.length < 100) {
+        memory.del('bg')
+    } else {
+        base64ToBlob(base)
+        const bz = URL.createObjectURL(base64ToBlob(base))
+        document.querySelector("#root").style.background = `url(${bz})`
+    }
+}

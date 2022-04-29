@@ -28,6 +28,14 @@ link.map(el => {
         }
     }
 )
+const assets = $("[dev]")
+assets.map(el => {
+    assets[el].attribs.src = assetsPath + assets[el].attribs.dev
+    const name = assets[el].attribs.dev;
+    delete assets[el].attribs.dev
+    fs.copyFileSync("./src/js/" + name, "./dist/" + name)
+})
+
 $("title").text("<?php echo $site['title']; ?> - <?php echo $site['subtitle']; ?>")
 let result = $.html();
 //转义php标签为正常标签
