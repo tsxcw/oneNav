@@ -22,6 +22,7 @@
     "css-loader": "^6.7.1",
     "element-ui": "^2.15.8",
     "file-loader": "^6.2.0",
+    "jquery": "^3.6.0",
     "js-md5": "^0.7.3",
     "jsb-util": "^1.0.7",
     "md5": "^2.3.0",

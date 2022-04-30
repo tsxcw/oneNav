@@ -5,15 +5,6 @@ import {install} from "./js/menu.jsx";
 import bus from "/src/js/bus"
 import axios from "axios";
 
-const option = [{
-    icon: require("/src/assets/bilibili.png"),
-    name: 'bilibili',
-    href: 'https://bilibili.com'
-}, {
-    icon: require("/src/assets/csdn.png"),
-    name: 'csdn',
-    href: 'https://csdn.com'
-}]
 let token = false;
 axios.defaults.baseURL = "";
 if (location.hostname === "localhost") {
@@ -62,11 +53,12 @@ const vm = new Vue({
                 time: 0
             },
             list: memory.get("list") || [],
-            lists: option,
+            lists: [],
             mouseRight: {
                 x: 0,
                 y: 0,
-            }
+            },
+            tabbar: []
         }
     },
     methods: {
@@ -118,11 +110,15 @@ const vm = new Vue({
                 this.history.splice(index1, 1)
             }
             if (index > -1) {
+                if (this.history.length === 8) {
+                    this.history.pop();
+                }
                 this.history.unshift({
                     url: url,
                     title: info.title,
                     description: info.description
                 })//删除后向数组最开始插入数据
+
                 memory.set("history", this.history.slice(0, 8));
             }
             const tempwindow = window.open();
@@ -130,8 +126,17 @@ const vm = new Vue({
         }
         ,
         getIcon(item) {
-            if (item.url)
-                return "https://favicon.rss.ink/v1/" + btoa(item.url);
+            if (item.url) {
+                let str = ""
+                try {
+                    str = "https://favicon.rss.ink/v1/" + btoa(encodeURI(item.url));
+                } catch (e) {
+                    console.log(e);
+                    console.log(item)
+                    console.log(item.url)
+                }
+                return str
+            }
         }
         ,
         login() {
@@ -185,6 +190,17 @@ const vm = new Vue({
                 }
             })
             this.searchPreview = Boolean(tmp.length > 0)
+            // if (!this.searchPreview) {
+            //     $.ajax({
+            //         url: 'https://www.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=pc',
+            //         dataType: 'jsonp',
+            //         jsonp: 'cb',
+            //         data: {wd: this.search},
+            //         success: function (msg) {
+            //             console.log(msg.g)
+            //         }
+            //     })
+            // }
             this.searchList = tmp.slice(0, 10)
             if (this.drawer)
                 this.drawer = false;
@@ -288,6 +304,7 @@ sumicon();
 window.addEventListener("resize", throttle(sumicon, 200))
 
 bus.$on("cc", function () {
+    //打开抽屉
     vm.drawer = true
 })
 
@@ -311,6 +328,6 @@ if (base) {
     } else {
         base64ToBlob(base)
         const bz = URL.createObjectURL(base64ToBlob(base))
-        document.querySelector("#root").style.background = `url(${bz})`
+        document.querySelector("#root").style.background = `url(${bz}) no-repeat center/cover`
     }
 }

@@ -15,7 +15,7 @@ exports.install = function install(Vue) {
                          <el-select v-model="addInfo.fid" placeholder="请选择目录">
                             <el-option :value="it.id" :label="it.name" v-for="(it,index) in option" :key="index"></el-option>
                          </el-select>
-                         <el-input placeholder="权重（0-99）" v-model="addInfo.weight"></el-input>
+                         <el-input placeholder="权重（0-99）" type="number" v-model="addInfo.weight"></el-input>
                          <el-switch
                         v-model="addInfo.property"
                         active-color="#13ce66"
@@ -65,7 +65,8 @@ exports.install = function install(Vue) {
                 return {
                     dialogVisible: false,
                     option: [],
-                    addInfo: {
+                    addInfo: {},
+                    tmp: {//这个是为了在下次打开的时候清空内容的数据结构
                         url: '',
                         weight: '',
                         title: '',
@@ -82,6 +83,7 @@ exports.install = function install(Vue) {
                     if (e === false) {
                         window.scrolllock = false
                     } else if (e === true) {
+                        this.addInfo = JSON.parse(JSON.stringify(this.tmp));
                         window.scrolllock = true;
                     }
                 }
@@ -92,11 +94,13 @@ exports.install = function install(Vue) {
                     this.dialogVisible = true
                 })
                 bus.$on("showandupdate", (e) => {
-                    this.option = memory.get("list") || [];
-                    this.addInfo = e
-                    this.addInfo.property = e.property == 0 ? true : false
                     this.dialogVisible = true
                     this.isedit = true
+                    this.$nextTick(_ => {
+                        this.option = memory.get("list") || [];
+                        this.addInfo = e
+                        this.addInfo.property = e.property == 0 ? true : false
+                    })
                 })
             }
         })
@@ -105,14 +109,14 @@ exports.install = function install(Vue) {
     Vue.component("tabar", {
         template: (`<div v-show="show" class="tabar" :style="{left:mouseRight.x,top:mouseRight.y}">
                         <div @click="addmenu">新增目录</div>
-                        <div v-if="sunshow(1)" @click="updatemenu">修改目录</div>
-                        <div v-if="sunshow(2)" @click="delmenu" >删除目录</div>
-                        <div class="addlink" @click="addlink">新增链接</div>
-                        <div v-if="sunshow(3)" @click="dellink">删除链接</div>
-                        <div v-if="sunshow(4)" @click="updatelink">修改链接</div>
-                        <div v-if="sunshow(5)" @click="delhistory">删除记录</div>
-                        <div @click="swiptBg">换个背景</div>
-                        <div v-if="sunshow(6)" @click="downbg" >下载壁纸</div>
+                        <div v-if="canshow(1)" @click="updatemenu">修改目录</div>
+                        <div v-if="canshow(2)" @click="delmenu" >删除目录</div>
+                        <div class="addlink"   @click="addlink">新增链接</div>
+                        <div v-if="canshow(3)" @click="dellink">删除链接</div>
+                        <div v-if="canshow(4)" @click="updatelink">修改链接</div>
+                        <div v-if="canshow(5)" @click="delhistory">删除记录</div>
+                        <div v-if="canshow(6)" @click="swiptBg">换个背景</div>
+                        <div v-if="canshow(6)" @click="downbg" >下载壁纸</div>
 <!--                        <div @click="setting">个性设置</div>-->
                     </div>`),
         data() {
@@ -174,7 +178,7 @@ exports.install = function install(Vue) {
                     ell.blob().then(cc => {
                         data.readAsDataURL(cc);
                         const ac = URL.createObjectURL(cc)
-                        document.querySelector("#root").style.background = `url(${ac})`
+                        document.querySelector("#root").style.background = `url(${ac}) no-repeat center/cover`
                     })
                 })
                 this.show = false
@@ -233,7 +237,7 @@ exports.install = function install(Vue) {
                 bus.$emit("showandupdate", info)
                 this.show = false
             },
-            sunshow(index) {
+            canshow(index) {
                 return Boolean(this.ctype.indexOf(index) > -1)
             }
         },
@@ -324,7 +328,7 @@ exports.install = function install(Vue) {
                           <el-select v-model="addInfo.fid" placeholder="父级菜单，非必选">
                             <el-option :value="it.id" :label="it.name" v-for="(it,index) in option" :key="index"></el-option>
                          </el-select>
-                         <el-input placeholder="权重（0-99）" v-model="addInfo.weight"></el-input>
+                         <el-input placeholder="权重（0-99）" type="number" v-model="addInfo.weight"></el-input>
                          <el-switch
                              v-model="addInfo.property"
                              active-color="#13ce66"
@@ -377,7 +381,15 @@ exports.install = function install(Vue) {
                         property: true,
                         description: '',
                         font_icon: 'fa ',
-                        fid:""
+                        fid: ""
+                    },
+                    tmp: {
+                        name: '',
+                        weight: '',
+                        property: true,
+                        description: '',
+                        font_icon: 'fa ',
+                        fid: ""
                     },
                     isedit: false
                 }
@@ -387,29 +399,33 @@ exports.install = function install(Vue) {
                     if (e === false) {
                         window.scrolllock = false
                     } else if (e === true) {
+                        this.addInfo = JSON.parse(JSON.stringify(this.tmp));
                         window.scrolllock = true;
                     }
                 }
             },
             mounted() {
                 bus.$on("menushow", (info) => {
-                    let arr = [];
-                    memory.get("list").forEach(el => {
-                        if (el.fid == '0') {
-                            arr.push(el)
+                    this.dialogVisible = true
+                    this.$nextTick(_ => {
+                        let arr = [];
+                        memory.get("list").forEach(el => {
+                            if (el.fid == '0') {
+                                arr.push(el)
+                            }
+                        })
+                        this.option = arr;
+                        if (info !== true) {
+                            for (const item in this.addInfo) {
+                                this.addInfo[item] = info[item]
+                            }
+                            this.addInfo.property = Boolean(info["property"] !== 1)
+                            this.addInfo.id = info.id;
+                            this.addInfo.fid = info.fid;
+                            this.isedit = true
                         }
                     })
-                    this.option = arr;
-                    if (info !== true) {
-                        for (const item in this.addInfo) {
-                            this.addInfo[item] = info[item]
-                        }
-                        this.addInfo.property = Boolean(info["property"] !== 1)
-                        this.addInfo.id = info.id;
-                        this.addInfo.fid = info.fid;
-                        this.isedit = true
-                    }
-                    this.dialogVisible = true
+
                 })
             }
         })

@@ -68,9 +68,9 @@
             </div>
         </div>
     </div>
-    <div v-if="lists.length!=0" :class="{shows:drawer}" class="bottomtab">
-        <div :style="{width:lists.length*65+'px'}" class="al">
-            <div v-for="(item,index) in lists" :key="index">
+    <div v-if="tabbar.length!=0" :class="{shows:drawer}" class="bottomtab">
+        <div :style="{width:tabbar.length*65+'px'}" class="al">
+            <div v-for="(item,index) in tabbar" :key="index">
                 <img :src="item.icon"/>
                 <!--                <span>{{ item.title.slice(0, 1) }}</span>-->
             </div>
